@@ -28,6 +28,6 @@ spec:
         #     fieldRef:
         #       fieldPath: status.hostIP
         ports:
-        - containerPort: 8080
+        - containerPort: 8000
         resources: {}
 status: {}
