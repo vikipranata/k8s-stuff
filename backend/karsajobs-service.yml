@@ -5,7 +5,9 @@ metadata:
 spec:
   selector:
     app: karsajobs
+  type: ClusterIP
   ports:
-    - protocol: TCP
-      port: 80
+    - name: karsajobs
+      protocol: TCP
+      port: 8080
       targetPort: 8080

@@ -22,7 +22,7 @@ spec:
         - name: APP_PORT
           value: "8080"
         - name: MONGO_HOST
-          value: "mongo"
+          value: "mongodb.default.svc.cluster.local"
         - name: MONGO_USER
           value: "admin"
         - name: MONGO_PASS
