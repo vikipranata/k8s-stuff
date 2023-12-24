@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus-server
+  namespace: monitoring
+  labels:
+    app: prometheus-server
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-server 
+  serviceName: "prometheus"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: 'true'
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        operator: Exists
+      containers:
+        - name: prometheus
+          image: quay.io/prometheus/prometheus:v2.47.0
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+            - "--web.enable-lifecycle"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-yml-config
+              mountPath: /etc/prometheus/
+            - name: hostpath-prometheus-server-pv
+              mountPath: /prometheus/
+        - name: configmap-reload
+          image: "jimmidyson/configmap-reload:v0.9.0"
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+          env:
+          - name: NO_PROXY
+            value: localhost,127.0.0.1
+          args:
+            - --volume-dir=/etc/prometheus/
+            - --webhook-url=http://127.0.0.1:9090/-/reload
+          volumeMounts:
+            - mountPath: /etc/prometheus/
+              name: prometheus-yml-config
+              readOnly: true
+      volumes:
+        - name: prometheus-yml-config
+          configMap:
+            defaultMode: 420
+            name: prometheus-yml
+        - name: hostpath-prometheus-server-pv
+          persistentVolumeClaim:
+            claimName: hostpath-prometheus-server-pvc
+---
