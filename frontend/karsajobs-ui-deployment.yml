@@ -22,9 +22,11 @@ spec:
         name: karsajobs-ui
         env:
         - name: VUE_APP_BACKEND
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
+          value: 10.1.1.11:30808
+        # - name: VUE_APP_BACKEND
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: status.hostIP
         ports:
         - containerPort: 8080
         resources: {}
