@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: karsajobs
+  name: karsajobs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: karsajobs
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: karsajobs
+    spec:
+      containers:
+      - env:
+        - name: APP_PORT
+          value: "8080"
+        - name: MONGO_HOST
+          value: "mongo"
+        - name: MONGO_USER
+          value: "admin"
+        - name: MONGO_PASS
+          value: "supersecretpassword"
+        ## Disabled because still get issue "2023/12/24 08:34:20 failed to create internal authenticator: error SASLprepping password 'supersecretpassword': prohibited character (rune: '\u000a')" ##
+        # - name: MONGO_USER 
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: mongo-secret
+        #       key: MONGO_ROOT_USERNAME
+        # - name: MONGO_PASS
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: mongo-secret
+        #       key: MONGO_ROOT_PASSWORD
+        image: vikipranata/karsajobs:latest
+        name: karsajobs
+        ports:
+        - containerPort: 8080
+        resources: {}
+    # volume:
+    #   - name: mongo-secret
+    #     secret:
+    #       secretName: mongo-secret
+status: {}
