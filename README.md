@@ -1,1 +1,1 @@
-This repository uses for learning kubernetes
+Dicoding [Belajar Membangun Arsitektur Microservices](https://www.dicoding.com/academies/433/corridor)
