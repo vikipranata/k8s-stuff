@@ -1,0 +1,41 @@
+version: "3.2"
+services:
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq:/var
+    networks:
+      - dev_net
+  order-service:
+    image: vikipranata/order-service:latest
+    container_name: 'order-service'
+    environment:
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+    command: sh -c '/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- node index.js'
+    ports:
+      - 3000:3000
+    networks:
+      - dev_net
+    depends_on:
+      - rabbitmq
+  shipping-service:
+    image: vikipranata/shipping-service:latest
+    container_name: 'shipping-service'
+    environment:
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+    command: sh -c '/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- node index.js'
+    ports:
+      - 3001:3001
+    networks:
+      - dev_net
+    depends_on:
+      - rabbitmq
+networks:
+  dev_net:
+    driver: bridge
+volumes:
+  rabbitmq:

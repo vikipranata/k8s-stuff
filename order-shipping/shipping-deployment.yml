@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: shipping-service
+  name: shipping-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipping-service
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shipping-service
+    spec:
+      containers:
+      - env:
+        - name: AMQP_URL
+          value: "amqp://guest:guest@rabbitmq:5672"
+        image: vikipranata/shipping-service:latest
+        name: order-service
+        command: ["/bin/sh", "-c"]
+        args: ["/bin/wait-for-it.sh rabbitmq:5672 --timeout=30 -- node index.js"]
+        ports:
+        - containerPort: 3001
